@@ -92,7 +92,8 @@ public class DefaultConfig implements IConfig {
 
     // ### BEGIN FIELDS GENERATED FROM config.groovy (*** DO NOT EDIT DIRECTLY ***)
 
-    @Option(name = "--" + DRIVER, aliases = "-d", metaVar = "<driver>", usage = "firefox (default) | chrome | ie | edge | safari | htmlunit | remote | appium | FQCN-of-WebDriverFactory")
+    @Option(name = "--" + DRIVER, aliases = "-d", metaVar = "<driver>",
+        usage = "firefox (default) | chrome | ie | edge | safari | htmlunit | remote | appium | FQCN-of-WebDriverFactory")
     private String driver;
 
     @Option(name = "--" + HEADLESS, usage = "use headless mode if driver is supported (currently, Chrome and Firefox)")
@@ -237,6 +238,12 @@ public class DefaultConfig implements IConfig {
 
     @Option(name = "--" + HELP, aliases = "-h", usage = "show this message.")
     private Boolean help;
+
+    @Option(name = "--" + SUITE_FILTER, metaVar = "<suiteName>", usage = "Filter suites to be executed, split by '|'. Only work for .side file")
+    private String suiteFilter;
+
+    @Option(name = "--" + CASE_FILTER, metaVar = "<caseName>", usage = "Filter cases to be executed, split by '|'. Only work for .side file")
+    private String caseFilter;
 
     // ### END FIELDS GENERATED FROM config.groovy (*** DO NOT EDIT DIRECTLY ***)
 
@@ -694,6 +701,24 @@ public class DefaultConfig implements IConfig {
 
     public void setHelp(boolean help) {
         this.help = help;
+    }
+
+    public void setSuiteFilter(String suiteFilter) {
+        this.suiteFilter = suiteFilter;
+    }
+
+    @Override
+    public String getSuiteFilter() {
+        return suiteFilter != null ? suiteFilter : (parentOptions != null ? parentOptions.getSuiteFilter() : null);
+    }
+
+    public void setCaseFilter(String caseFilter) {
+        this.caseFilter = caseFilter;
+    }
+
+    @Override
+    public String getCaseFilter() {
+        return caseFilter != null ? caseFilter : (parentOptions != null ? parentOptions.getCaseFilter() : null);
     }
 
     // ### END GETTERS & SETTERS GENERATED FROM config.groovy (*** DO NOT EDIT DIRECTLY ***)

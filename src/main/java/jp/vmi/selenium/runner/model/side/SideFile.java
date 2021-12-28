@@ -168,8 +168,20 @@ public class SideFile extends SideBase {
      * @throws InvalidSeleneseException invalid selenese exception.
      */
     public static SideProject parse(String filename, InputStream is) throws InvalidSeleneseException {
+        return parse(filename, is, null, null);
+    }
+
+    /**
+     * Read side format data.
+     *
+     * @param filename filename of side format file. (only label)
+     * @param is input stream of side format file.
+     * @return SideFile data.
+     * @throws InvalidSeleneseException invalid selenese exception.
+     */
+    public static SideProject parse(String filename, InputStream is, String suiteFilter, String caseFilter) throws InvalidSeleneseException {
         try (Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-            return new SideProject(filename, newGson().fromJson(r, SideFile.class));
+            return new SideProject(filename, newGson().fromJson(r, SideFile.class), suiteFilter, caseFilter);
         } catch (IOException e) {
             throw new InvalidSeleneseException(e, filename, ParserUtils.getNameFromFilename(filename));
         }

@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.gson.GsonBuilder;
 
@@ -23,12 +26,30 @@ public class SideProject implements IProject<SideSuite, SideTest, SideCommand> {
     private final Map<String, SideTest> testMap = new HashMap<>();
 
     SideProject(String filename, SideFile sideFile) {
+        this(filename, sideFile, null, null);
+    }
+
+    SideProject(String filename, SideFile sideFile, String suiteFilter, String caseFilter) {
         this.filename = filename;
         this.name = sideFile.getName();
         this.id = sideFile.getId();
         this.url = sideFile.getUrl();
-        this.suites = sideFile.getSuites();
-        sideFile.getTests().stream().forEach(test -> testMap.put(test.getId(), test));
+        this.suites = sideFile.getSuites().stream().filter(suite -> { // filter test suites
+            if (suiteFilter != null) {
+                String[] suiteNames = suiteFilter.split("\\|");
+                return ArrayUtils.contains(suiteNames, suite.getName());
+            }
+            return true;
+        }).collect(Collectors.toList());
+
+        sideFile.getTests().stream().filter(test -> { // filter test cases
+            if (caseFilter != null) {
+                String[] caseNames = caseFilter.split("\\|");
+                return ArrayUtils.contains(caseNames, test.getName());
+            }
+            return true;
+        }).forEach(test -> testMap.put(test.getId(), test));
+
         suites.stream().forEach(suite -> {
             ListIterator<SideTest> iter = suite.getTests().listIterator();
             while (iter.hasNext()) {

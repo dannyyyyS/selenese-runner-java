@@ -93,6 +93,8 @@ public class Runner implements Context, ScreenshotHandler, HighlightHandler, JUn
     private long initialSpeed = 0; /* ms */
     private long speed = 0; /* ms */
     private int screenshotScrollTimeout = 100; /* ms */
+    private String suiteFilter = null;
+    private String caseFilter = null;
 
     private final Eval eval;
     private final SubCommandMap subCommandMap;
@@ -822,7 +824,7 @@ public class Runner implements Context, ScreenshotHandler, HighlightHandler, JUn
         Result totalResult = UNEXECUTED;
         List<TestSuite> testSuiteList = new ArrayList<>();
         for (String filename : filenames) {
-            Selenese selenese = Parser.parse(filename, commandFactory);
+            Selenese selenese = Parser.parse(filename, commandFactory, suiteFilter, caseFilter);
             if (selenese.isError()) {
                 log.error(selenese.toString());
                 totalResult = ((ErrorSource) selenese).getResult();
@@ -866,7 +868,7 @@ public class Runner implements Context, ScreenshotHandler, HighlightHandler, JUn
      */
     public Result run(String filename, InputStream is) {
         TestSuite testSuite;
-        Selenese selenese = Parser.parse(filename, is, commandFactory);
+        Selenese selenese = Parser.parse(filename, is, commandFactory, suiteFilter, caseFilter);
         switch (selenese.getType()) {
         case TEST_CASE:
             testSuite = Binder.newTestSuite(filename, selenese.getName());
@@ -970,5 +972,35 @@ public class Runner implements Context, ScreenshotHandler, HighlightHandler, JUn
      */
     public void setInteractiveMode(InteractiveModeHandler interactiveModeHandler) {
         this.interactiveModeHandler = interactiveModeHandler;
+    }
+
+    /**
+     * @return the suiteFilter
+     */
+    public String getSuiteFilter() {
+        return suiteFilter;
+    }
+
+    /**
+     * @return the caseFilter
+     */
+    public String getCaseFilter() {
+        return caseFilter;
+    }
+
+    /**
+     * suite names to be executed. Split by "|"
+     * @param suiteFilter suiteNames
+     */
+    public void setSuiteFilter(String suiteFilter) {
+        this.suiteFilter = suiteFilter;
+    }
+
+    /**
+     * case names to be executed. Split by "|"
+     * @param caseFilter caseNames
+     */
+    public void setCaseFilter(String caseFilter) {
+        this.caseFilter = caseFilter;
     }
 }

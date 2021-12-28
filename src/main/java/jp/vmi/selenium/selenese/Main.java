@@ -233,6 +233,12 @@ public class Main {
         runner.setScreenshotScrollTimeout(sstimeout);
         if (config.isNoReplaceAlertMethod())
             runner.setReplaceAlertMethod(false);
+        if (config.getSuiteFilter() != null) {
+            runner.setSuiteFilter(config.getSuiteFilter());
+        }
+        if (config.getCaseFilter() != null) {
+            runner.setCaseFilter(config.getCaseFilter());
+        }
         runner.setPrintStream(System.out);
     }
 

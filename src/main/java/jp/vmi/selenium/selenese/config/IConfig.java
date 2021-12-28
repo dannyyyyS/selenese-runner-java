@@ -75,6 +75,8 @@ public interface IConfig {
     public static final String MAX_TIME = "max-time";
     public static final String NO_REPLACE_ALERT_METHOD = "no-replace-alert-method";
     public static final String HELP = "help";
+    public static final String SUITE_FILTER = "suite-filter";
+    public static final String CASE_FILTER = "case-filter";
 
     // ### END OPTION NAMES GENERATED FROM config.groovy (*** DO NOT EDIT DIRECTLY ***)
 
@@ -201,6 +203,10 @@ public interface IConfig {
     boolean isNoReplaceAlertMethod();
 
     boolean isHelp();
+
+    String getSuiteFilter();
+
+    String getCaseFilter();
 
     // ### END GETTERS GENERATED FROM config.groovy
 }

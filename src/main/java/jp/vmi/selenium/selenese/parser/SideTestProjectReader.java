@@ -24,7 +24,21 @@ public class SideTestProjectReader implements TestProjectReader {
      * @throws InvalidSeleneseException invalid selenese exception.
      */
     public static SideTestProjectReader newInstance(String filename, InputStream is) throws InvalidSeleneseException {
-        SideProject side = SideFile.parse(filename, is);
+        return newInstance(filename, is, null, null);
+    }
+
+    /**
+     * Create new instance of SideTestProjectReader.
+     *
+     * @param filename side script file. (Don't use to open a file. It is used as a label and is used to generate filenames based on it)
+     * @param is input stream of *.side file.
+     * @param suiteFilter suites to be executed
+     * @param caseFilter cases to be executed
+     * @return test-project.
+     * @throws InvalidSeleneseException invalid selenese exception.
+     */
+    public static SideTestProjectReader newInstance(String filename, InputStream is, String suiteFilter, String caseFilter) throws InvalidSeleneseException {
+        SideProject side = SideFile.parse(filename, is, suiteFilter, caseFilter);
         return new SideTestProjectReader(side);
     }
 

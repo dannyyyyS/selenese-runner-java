@@ -22,16 +22,18 @@ public abstract class Parser {
      * @param filename selenese script file. (Don't use to open a file. It is used as a label and is used to generate filenames based on it)
      * @param is input stream of script file. (test-case or test-suite)
      * @param commandFactory command factory.
+     * @param suiteFilter suites to be executed
+     * @param caseFilter cases to be executed
      * @return TestCase or TestSuite.
      */
-    public static Selenese parse(String filename, InputStream is, ICommandFactory commandFactory) {
+    public static Selenese parse(String filename, InputStream is, ICommandFactory commandFactory, String suiteFilter, String caseFilter) {
         boolean isSide = filename.toLowerCase().endsWith(".side");
         try {
             TestProjectReader projectReader;
             SourceType sourceType;
             if (isSide) {
                 sourceType = SourceType.SIDE;
-                projectReader = SideTestProjectReader.newInstance(filename, is);
+                projectReader = SideTestProjectReader.newInstance(filename, is, suiteFilter, caseFilter);
             } else {
                 sourceType = SourceType.SELENESE;
                 projectReader = SeleneseTestProjectReader.newInstance(filename, is);
@@ -44,6 +46,36 @@ public abstract class Parser {
     }
 
     /**
+     * Parse input stream.
+     *
+     * @param filename selenese script file. (Don't use to open a file. It is used as a label and is used to generate filenames based on it)
+     * @param is input stream of script file. (test-case or test-suite)
+     * @param commandFactory command factory.
+     * @return TestCase or TestSuite.
+     */
+    public static Selenese parse(String filename, InputStream is, ICommandFactory commandFactory) {
+        return parse(filename, is, commandFactory, null, null);
+    }
+
+    /**
+     * Parse file.
+     *
+     * @param filename selenese script file. (test-case or test-suite)
+     * @param commandFactory command factory.
+     * @param suiteFilter suites to be executed
+     * @param caseFilter cases to be executed
+     * @return TestCase or TestSuite.
+     */
+    public static Selenese parse(String filename, ICommandFactory commandFactory, String suiteFilter, String caseFilter) {
+        try (InputStream is = new FileInputStream(filename)) {
+            return parse(filename, is, commandFactory, suiteFilter, caseFilter);
+        } catch (IOException e) {
+            String name = ParserUtils.getNameFromFilename(filename);
+            return Binder.newErrorTestSuite(filename, new InvalidSeleneseException(e.getMessage(), filename, name));
+        }
+    }
+
+    /**
      * Parse file.
      *
      * @param filename selenese script file. (test-case or test-suite)
@@ -51,12 +83,7 @@ public abstract class Parser {
      * @return TestCase or TestSuite.
      */
     public static Selenese parse(String filename, ICommandFactory commandFactory) {
-        try (InputStream is = new FileInputStream(filename)) {
-            return parse(filename, is, commandFactory);
-        } catch (IOException e) {
-            String name = ParserUtils.getNameFromFilename(filename);
-            return Binder.newErrorTestSuite(filename, new InvalidSeleneseException(e.getMessage(), filename, name));
-        }
+        return parse(filename, commandFactory, null, null);
     }
 
     protected abstract Selenese parse(ICommandFactory commandFactory);
