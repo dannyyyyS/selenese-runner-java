@@ -874,6 +874,7 @@ public class Runner implements Context, ScreenshotHandler, HighlightHandler, JUn
             testSuite = Binder.newTestSuite(filename, selenese.getName());
             testSuite.addSelenese(selenese);
             break;
+        case TEST_PROJECT:
         case TEST_SUITE:
             testSuite = (TestSuite) selenese;
             break;

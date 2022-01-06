@@ -34,21 +34,31 @@ public class SideProject implements IProject<SideSuite, SideTest, SideCommand> {
         this.name = sideFile.getName();
         this.id = sideFile.getId();
         this.url = sideFile.getUrl();
-        this.suites = sideFile.getSuites().stream().filter(suite -> { // filter test suites
-            if (suiteFilter != null) {
-                String[] suiteNames = suiteFilter.split("\\|");
-                return ArrayUtils.contains(suiteNames, suite.getName());
-            }
-            return true;
-        }).collect(Collectors.toList());
 
-        sideFile.getTests().stream().filter(test -> { // filter test cases
+        /*
+         * filter test cases
+         */
+        sideFile.getTests().stream().filter(test -> {
             if (caseFilter != null) {
                 String[] caseNames = caseFilter.split("\\|");
                 return ArrayUtils.contains(caseNames, test.getName());
             }
             return true;
         }).forEach(test -> testMap.put(test.getId(), test));
+        /*
+         * filter test suites
+         */
+        this.suites = sideFile.getSuites().stream().filter(suite -> {
+            if (suiteFilter != null) {
+                String[] suiteNames = suiteFilter.split("\\|");
+                if (!ArrayUtils.contains(suiteNames, suite.getName())) { // not include in suite filter
+                    return false;
+                }
+            }
+            return suite.getTests().stream().map(SideTest::getId).anyMatch(testId -> {
+                return testMap.get(testId) != null;
+            });
+        }).collect(Collectors.toList());
 
         suites.stream().forEach(suite -> {
             ListIterator<SideTest> iter = suite.getTests().listIterator();
